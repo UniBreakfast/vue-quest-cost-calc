@@ -11,9 +11,9 @@
 <body>
     <div id="app">
         <h1>{{ hello }}</h1>
-        <input type="number" min="0" v-bind:max="confidence / (term - fora)" @input="diff = $event.target.value" v-bind:value="diff">
-        <input type="number" min="0" v-bind:max="confidence / diff + (+fora)" @input="term = $event.target.value" v-bind:value="term">
-        <input type="number" min="0" v-on:input="fora = $event.target.value" v-bind:value="fora">
+        <input type="number" min="1" v-bind:max="maxDiff()" v-model="diff">
+        <input type="number" min="minTerm()" v-bind:max="maxTerm()" v-model="term">
+        <input type="number" v-bind:min="minFora()" v-bind:max="maxFora()" v-model="fora">
         <p class="result">{{ diff * (term - fora) }}</p>
     </div>
 <script type="text/javascript">
@@ -27,7 +27,12 @@
             confidence: 50
         },
         methods: {
-            cost: function() {return this.diff * (this.term - this.fora)}
+            cost: function() {return this.diff * (this.term - this.fora)},
+            maxDiff: function() {return this.confidence / (this.term - this.fora)},
+            maxTerm: function() {return this.confidence / this.diff + (+this.fora)},
+            minTerm: function() {return this.fora + 1 || 1},
+            minFora: function() {return this.term - this.confidence / this.diff},
+            maxFora: function() {return this.term - 1}
         }
     });
 </script>
