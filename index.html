@@ -6,33 +6,73 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <style>
+      :root {
+        --font: bold 20px Trebuchet MS, Helvetica, sans-serif;
+      }
+      html { font: var(--font) }
+      form {
+        margin: 10px auto;
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        width: 100px;
+        gap: 8px;
+      }
+      label {
+        text-align: right;
+      }
+      input {
+        width: 60px;
+        text-align: center;
+        font: var(--font);
+        border: 2px solid;
+      }
+      p {
+        margin: 0;
+        font-weight: bold;
+        text-align: center;
+      }
+    </style>
     <title>Document</title>
 </head>
 <body>
     <div id="app">
-        <h1>{{ hello }}</h1>
-        <input type="number" min="1" v-bind:max="maxDiff()" v-model="diff">
-        <input type="number" min="minTerm()" v-bind:max="maxTerm()" v-model="term">
-        <input type="number" v-bind:min="minFora()" v-bind:max="maxFora()" v-model="fora">
-        <p class="result">{{ diff * (term - fora) }}</p>
+        <h1>{{ title }}</h1>
+        <h5>quest price = difficulty * term <br> but pledge = difficulty * (term - fora)</h5>
+        <form>
+          <label for=diff>difficulty:</label>
+          <input id=diff type="number" min="1" :max="maxDiff()" v-model="diff">
+          <label for=term>term:</label>
+          <input id=term type="number" :min="minTerm()" :max="maxTerm()" v-model="term">
+          <label for=fora>fora:</label>
+          <input id=fora type="number" :min="minFora()" :max="maxFora()" v-model="fora">
+          <label for=price>price:</label>
+          <p id=price>{{ price() }}</p>
+          <label for=pledge>pledge:</label>
+          <p id=pledge>{{ pledge() }}</p>
+          <label for=conf>confidence:</label>
+          <input id=conf type="number" :min="minConf()" v-model="confidence">
+        </form>
     </div>
 <script type="text/javascript">
     new Vue({
         el: '#app',
         data: {
-            hello: 'Quest cost Calculator',
+            title: 'Quest cost Calculator',
             diff: '5',
             term: '12',
             fora: '2',
             confidence: 50
         },
         methods: {
-            cost: function() {return this.diff * (this.term - this.fora)},
-            maxDiff: function() {return this.confidence / (this.term - this.fora)},
-            maxTerm: function() {return this.confidence / this.diff + (+this.fora)},
-            minTerm: function() {return this.fora + 1 || 1},
-            minFora: function() {return this.term - this.confidence / this.diff},
-            maxFora: function() {return this.term - 1}
+            price: function() {return this.diff * this.term},
+            pledge: function() {return this.diff * (this.term - this.fora)},
+            maxDiff: function() {return Math.min(this.confidence / (this.term - this.fora), 10)},
+            maxTerm: function() {return Math.floor(this.confidence / this.diff + (+this.fora))},
+            minTerm: function() {return +this.fora + 1 || 1},
+            minFora: function() {return Math.max(this.term - this.confidence / this.diff, 0)},
+            maxFora: function() {return this.term - 1},
+            minConf: function() {return this.price()}
         }
     });
 </script>
